@@ -1,6 +1,5 @@
 #!/bin/bash
 
 cd src/ || exit
-
-make dist
-mv dist/howard.zip .
+make dist || exit
+mv dist/HOWARD.ZIP .

@@ -1,4 +1,3 @@
-
 all:	fonts drivers utilities1
 
 fonts:	howard16.fnt
