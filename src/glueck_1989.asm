@@ -1,6 +1,7 @@
-﻿; This is a source version GLUECK.SYS. It is a
-; slightly optimised build compared to the 8
-; June 1989 Version 1.01 edition.
+﻿; This is a source version GLUECK.SYS. It builds
+; the same version as Version 1.01, 8 June 1989
+; if the welcome banner is set to the same as
+; that version.
 ;
 ; GLUECK.SYS takes no parameters. It will load an
 ; 8x16 font that is embedded starting at org 18h,
@@ -113,8 +114,8 @@ _TEXT           segment byte public 'DRIVER'
 
 strtgy_routine  proc    far
                 ; Store pointer to device request block
-                mov     word ptr cs:[request_header_off], bx
-                mov     word ptr cs:[request_header_seg], es
+                mov     word ptr cs:request_header, bx
+                mov     word ptr cs:request_header+2, es
                 retf
 strtgy_routine  endp
 
@@ -123,12 +124,7 @@ intrpt_routine  proc    far
                 push    bx
                 push    es
 
-                ; We allow the strategy routine to store directly here.
-request_header_seg      equ $+1
-                mov     bx, 0
-                mov     cs, bx
-request_header_off      equ $+1
-                mov     bx, 0
+                les     bx, cs:request_header ; Stores device request header from strategy routine
 
                 cmp     es:[bx+dos_device_request_hdr.request_hdr_cmd_code], DEV_CMD_INIT
                 jz      short device_command_init
@@ -237,9 +233,9 @@ banner          db 13,10
                 db 0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh
                 db 0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0BBh,13,10
                 db 0BAh,' >>>>>  HOWARD the FONT  <<<<< ',0BAh,13,10
-                db 0BAh,' Version 2.01  ',0C4h,0C4h
-                db                       '  28 Aug 2020 ',0BAh,13,10
-                db 0BAh,'   Update by: Joshua E. Rodd  ',0BAh,13,10
+                db 0BAh,' *** IBM Internal Use Only *** ',0BAh,13,10
+                db 0BAh,' Version 1.01  ',0C4h,0C4h
+                db                       '  08 Jun 1989 ',0BAh,13,10
                 db 0BAh,'  Programmer: Alan E. Beelitz  ',0BAh,13,10
                 db 0BAh,' Inspiration: Howard W. Glueck ',0BAh,13,10
                 db 0C8h,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh,0CDh

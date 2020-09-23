@@ -16,12 +16,13 @@ dist: howard16.fnt glueck.sys vmode2.com vmode3.com vmode7.com showfont.com clrs
 UASM_FLAGS=-0
 
 howard16.fnt:	howard16.asm howard16.inc
-	uasm $(UASM_FLAGS) -bin howard16.asm
-	mv howard16.bin howard16.fnt
+	uasm $(UASM_FLAGS) -Fohoward16.fnt -bin howard16.asm
 
-glueck.sys:	glueck.asm howard16.inc
-	uasm $(UASM_FLAGS) -bin glueck.asm
-	mv glueck.bin glueck.sys
+glueck.sys:	glueck.asm howard16.inc glueck.inc
+	uasm $(UASM_FLAGS) -Foglueck.sys -bin glueck.asm
+
+glueck89.sys:	glueck_1989.asm howard16.inc glueck.inc
+	uasm $(UASM_FLAGS) -Foglueck89.sys -bin glueck_1989.asm
 
 vmode2.com: vmode2.asm
 	uasm $(UASM_FLAGS) -bin vmode2.asm

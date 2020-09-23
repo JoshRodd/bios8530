@@ -1,0 +1,17 @@
+---
+layout: page
+title: AutoBuild
+permalink: /software/pcx86/autobuild/
+redirect_from: /disks/pcx86/autobuild/
+machines:
+  - id: ibm5150
+    type: pcx86
+    config: /configs/pcx86/machine/autobuild/machine.json
+    sizeRAM: 256
+    testRAM: false
+    autoMount:
+      A:
+        name: PC DOS 2.00 (Disk 1)
+      B:
+        name: PC DOS 2.00 (Disk 2)
+    autoType: \r\rB:\r
