@@ -11,10 +11,10 @@ clean:
 build/machine.json:	build/hello.com build/coldboot.com
 		./make_floppy_image.sh
 
-build/hello.com:	hello.asm
+build/hello.com:	src/hello.asm
 		mkdir -p build/
-		uasm -0 -q -bin -Fl=build/hello.lst -Fobuild/hello.com hello.asm
+		uasm -0 -q -bin -Fl=build/hello.lst -Fobuild/hello.com src/hello.asm
 
-build/coldboot.com:	coldboot.asm
+build/coldboot.com:	src/coldboot.asm
 		mkdir -p build/
-		uasm -0 -q -bin -Fl=build/coldboot.lst -Fobuild/coldboot.com coldboot.asm
+		uasm -0 -q -bin -Fl=build/coldboot.lst -Fobuild/coldboot.com src/coldboot.asm
