@@ -53,10 +53,8 @@ int usage_message(char* argv0) {
 #define MAX_ROM_SIZE 1048576
 unsigned char rom[MAX_ROM_SIZE];
 size_t rom_size = 0;
-
 FILE* info = NULL;
-
-int bit_0_set[2] = {1, 1};
+int bits_set[2];
 
 int combine_roms(char* filenames[], FILE* fds[], int verbose) {
     unsigned char chars[2];
@@ -66,12 +64,21 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
     unsigned char* romptr = rom;
 
     *size = 0;
+    bits_set[EVEN_FILE] = 0xFF;
+    bits_set[ODD_FILE] = 0XFF;
 
     do {
         for(i = EVEN_FILE; i <= ODD_FILE; i++) feofs[i] = feof(fds[i]);
         for(i = EVEN_FILE; i <= ODD_FILE; i++) {
             chars[i] = fgetc(fds[i]);
-            if(!(chars[i] & 1)) bit_0_set[i] = 0;
+            if(!(chars[i] & 1)) bits_set[i] &= ~1;
+            if(!(chars[i] & 2)) bits_set[i] &= ~2;
+            if(!(chars[i] & 4)) bits_set[i] &= ~4;
+            if(!(chars[i] & 8)) bits_set[i] &= ~8;
+            if(!(chars[i] & 16)) bits_set[i] &= ~16;
+            if(!(chars[i] & 32)) bits_set[i] &= ~32;
+            if(!(chars[i] & 64)) bits_set[i] &= ~64;
+            if(!(chars[i] & 128)) bits_set[i] &= ~128;
             if(ferror(fds[i])) {
                 fprintf(stderr, "Error reading file %s: %s\n", filenames[i], strerror(errno));
                 return *size;
@@ -126,9 +133,34 @@ int rom_info() {
                 } break;
                 default: fprintf(info, "Unknown model type %hhXh\n", bootptr[14]);
             }
-            if(bootptr[13] != 0xFF) {
-                fprintf(info,"Unexpected model type preamble %hhXh\n", bootptr[13]);
-            }
+        }
+        /* Check for odd and even switched around */
+        else if((bootptr[1] & ~bits_set[1]) == 0xEA) {
+            /* Normal:
+             *
+             * ea5b e000 f030 322f 3035 2f38 3700 fada  .[...02/05/87...
+             *
+             * Transposed:
+             *
+             * 5bea 00e0 30f0 2f32 3530 382f 0037 dafa  [...0./2508/.7..
+             */
+
+           if(bootptr[6] == '/' && bootptr[11] == '/') {
+               fprintf(info,"Warning: the odd and even sections appear to be transposed.\n");
+           }
+        }
+        /* Check for an even ROM by itself:
+         *
+         * 09b9 0f75 b1ef 4be1 ebe1 f133 312f 37fb  ...u..K....31/7.
+         * (this also has all bits 0 set) */
+        else if((bootptr[8]) & ~1 == 0xEA & bootptr[13] = '/') {
+            fprintf(info,"Warning: this appears to be the even half of a ROM.\n");
+        }
+        /* Odd ROM:
+         * eea0 48fd 0c4a eb00 5b00 312f 3238 00b7  ..H..J..[.1/28..
+         */
+        else if((bootptr[11] == '/' && !bootptr[6] != '/')) {
+            fprintf(info,"Warning: this appears to be the odd half of a ROM.\n");
         }
     } else {
         fprintf(info, "ROM is less than 16 bytes; unable to deduce more information.\n");
@@ -227,12 +259,12 @@ int main_proc(int argc, char* argv[], char* filenames[], FILE* fds[]) {
             if(!size) {
                 fprintf(stderr, "%s: Warning: Output file is empty\n", argv0);
             } else {
-                if(bit_0_set[EVEN_FILE])
-                    fprintf(stderr, "%s: Warning: Even file %s always has bit 0 set.\n",
-                        argv0, filenames[EVEN_FILE]);
-                if(bit_0_set[ODD_FILE])
-                    fprintf(stderr, "%s: Warning: Odd file %s always has bit 0 set.\n",
-                        argv0, filenames[ODD_FILE]);
+                if(bits_set[EVEN_FILE])
+                    fprintf(stderr, "%s: Warning: Even file %s always has bits 0%Xh set.\n",
+                        argv0, filenames[EVEN_FILE], bits_set[EVEN_FILE]);
+                if(bits_set[ODD_FILE])
+                    fprintf(stderr, "%s: Warning: Odd file %s always has bits 0%Xh set.\n",
+                        argv0, filenames[ODD_FILE], bits_set[ODD_FILE]);
             }
             if(verbose) return rom_info();
             else return 0;
