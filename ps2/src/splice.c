@@ -55,6 +55,7 @@ unsigned char rom[MAX_ROM_SIZE];
 size_t rom_size = 0;
 FILE* info = NULL;
 int bits_set[2];
+int clear_bit_0_in_even = 0;
 
 int combine_roms(char* filenames[], FILE* fds[], int verbose) {
     unsigned char chars[2];
@@ -79,6 +80,7 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
             if(!(chars[i] & 32)) bits_set[i] &= ~32;
             if(!(chars[i] & 64)) bits_set[i] &= ~64;
             if(!(chars[i] & 128)) bits_set[i] &= ~128;
+            if(clear_bit_0_in_even && i == EVEN_FILE) chars[i] &= 0xFE;
             if(ferror(fds[i])) {
                 fprintf(stderr, "Error reading file %s: %s\n", filenames[i], strerror(errno));
                 return *size;
@@ -104,34 +106,34 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
             fprintf(stderr, "Warning: Odd file is shorter than even file.\n");
             return *size;
         }
-        if(verbose) fprintf(stderr,"\rWritten %zu bytes...", *size);
+/*        if(verbose) fprintf(stderr,"\rWritten %zu bytes...", *size);*/
     } while(!(feofs[EVEN_FILE] && feofs[ODD_FILE]));
-    if(verbose && *size) fprintf(stderr,"\n");
+/*    if(verbose && *size) fprintf(stderr,"\n");*/
     return *size;
 }
 
 int rom_info() {
-    if(rom_size % 1024) fprintf(info, "ROM size: %zu bytes\n", rom_size);
-    else fprintf(info, "ROM size: %dkB\n", (int)(rom_size / 1024) );
+    if(rom_size % 1024) fprintf(info, "Size: %zu bytes\t", rom_size);
+    else fprintf(info, "Size: %dkB\t", (int)(rom_size / 1024) );
     if(rom_size >= 16) {
         unsigned char* bootptr = &(rom[rom_size - 16]);
         if(bootptr[0] == 0xEA) { /* JMP FAR instruction */
             uint16_t off = bootptr[1]+(bootptr[2]<<8);
             uint16_t seg = bootptr[3]+(bootptr[4]<<8);
             unsigned char date[9];
-            fprintf(info, "Entry point: %X:%X\n", seg, off);
+            fprintf(info, "Start: %X:%X\t", seg, off);
             memcpy(date, &(bootptr[5]), 8);
             date[8] = '\0';
             if(date[2] == '/' && date[5] == '/')
-                fprintf(info, "Date: %s\n", date);
+                fprintf(info, "Date: %s\t", date);
             else
-                fprintf(info, "Does not have a valid date.\n");
+                fprintf(info, "Invalid date\t");
             switch(bootptr[14]) {
                 case 0xFA: switch(bootptr[15]) {
-                    case 0xC3: fprintf(info, "IBM PS/2 Model 25\n"); break;
-                    default: fprintf(info, "IBM PS/2 Model 25 or 30 - unknown submodel\n");
+                    case 0xC3: fprintf(info, "8525"); break;
+                    default: fprintf(info, "8525/8530");
                 } break;
-                default: fprintf(info, "Unknown model type %hhXh\n", bootptr[14]);
+                default: fprintf(info, "Unknown model type %hhXh", bootptr[14]);
             }
         }
         /* Check for odd and even switched around */
@@ -153,13 +155,13 @@ int rom_info() {
          *
          * 09b9 0f75 b1ef 4be1 ebe1 f133 312f 37fb  ...u..K....31/7.
          * (this also has all bits 0 set) */
-        else if((bootptr[8]) & ~1 == 0xEA & bootptr[13] = '/') {
+        else if(((bootptr[8]) & ~1) == 0xEA && bootptr[13] == '/') {
             fprintf(info,"Warning: this appears to be the even half of a ROM.\n");
         }
         /* Odd ROM:
          * eea0 48fd 0c4a eb00 5b00 312f 3238 00b7  ..H..J..[.1/28..
          */
-        else if((bootptr[11] == '/' && !bootptr[6] != '/')) {
+        else if(((bootptr[11] == '/') && (bootptr[6] != '/'))) {
             fprintf(info,"Warning: this appears to be the odd half of a ROM.\n");
         }
     } else {
@@ -203,6 +205,8 @@ int main_proc(int argc, char* argv[], char* filenames[], FILE* fds[]) {
             else if(!strcmp(arg,"version")) return version_message();
             else if(!strcmp(arg,"verbose")) verbose = 1;
             else if(!strcmp(arg,"no-verbose")) verbose = 0;
+            else if(!strcmp(arg,"clear-even-bit-0")) clear_bit_0_in_even = 1;
+            else if(!strcmp(arg,"no-clear-even-bit-0")) clear_bit_0_in_even = 1;
             else if(!*arg) in_options = 0;
             else {
                 fprintf(stderr, "%s: Unknown option '--%s'.\n", argv0, arg);
@@ -266,6 +270,10 @@ int main_proc(int argc, char* argv[], char* filenames[], FILE* fds[]) {
                     fprintf(stderr, "%s: Warning: Odd file %s always has bits 0%Xh set.\n",
                         argv0, filenames[ODD_FILE], bits_set[ODD_FILE]);
             }
+            if(clear_bit_0_in_even) {
+                fprintf(stderr, "Warning: the --clear-bit-0-in-even option was specified.\n\
+The output file will have bit 0 cleared in every even byte.\n");
+            }
             if(verbose) return rom_info();
             else return 0;
         default:
@@ -273,7 +281,8 @@ int main_proc(int argc, char* argv[], char* filenames[], FILE* fds[]) {
             return 1;
     }
 
-    return 0;
+    fprintf(stderr,"Internal error\n");
+    return 1;
 }
 
 int main(int argc, char* argv[]) {
