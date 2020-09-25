@@ -10,7 +10,11 @@ All ROMs 32Kbytes per piece
 ??                          8525    11/02/1988  'Revision 01'
 68X1627.BIN+68X1687.BIN     8530    09/02/1986  'Revision 00'
 ??                          8530    12/12/1986? ?
-61X8938.BAD+61X8987.BIN  8530    12/13/1987  'Revision 01 European version'
+61X8938.BIN+61X8987.BIN     8530    13/12/1987  'Revision 01 European version'
 61X8940.BIN+61X8939.BIN     8530    02/05/1988  'Revision 02'
 ??                          8530    ??          'Revision 03'
 33F4498.BIN+33F4499.BIN     8530    01/31/1989  'Revision 04'
+
+61X8938.BIN is a file that has bit 0 always set. The date of
+13/12/1987 is an artifact of this.
+
