@@ -2,3 +2,7 @@ IBM_PS2-30.ZIP was retrieved from
 http://www.vcfed.org/forum/showthread.php?76874-PS-2-Model-30-8086-BIOS-dump
 49,324 bytes in size
 SHA256(IBM_PS2-30.ZIP)= 453d9b82fb39d40f5dc41fc450083154b1dca86affa9a036824cba9f252b7ea
+
+Rest of .BIn files retrieved from
+http://ibmmuseum.com/BIOS/8525/
+http://ibmmuseum.com/BIOS/8530/

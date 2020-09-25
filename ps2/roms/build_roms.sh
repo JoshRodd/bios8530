@@ -2,6 +2,7 @@
 
 export PATH=$PATH:"$(pwd)"/../src
 BUILD_DIR="$(pwd)"/build/
+ARCHIVES_DIR="$(pwd)"/archives/
 
 fileext=.BIN
 
@@ -20,12 +21,15 @@ while read even odd; do
     odd="$(basename "$odd" "$fileext")"
     echo
     echo $even $odd:
-    splice --verbose "$even""$fileext" "$odd""$fileext" "$BUILD_DIR""$even"_"$odd""$fileext"
+    splice --verbose "$ARCHIVES_DIR""$even""$fileext" "$ARCHIVES_DIR""$odd""$fileext" "$BUILD_DIR""$even"_"$odd""$fileext"
     echo
 done < <(cat <<EOD
 00F2122 00F2123
 33F4498 33F4499
-61X8938 61X8937
 61X8940 61X8939
 68X1687 68X1627
 EOD)
+
+even=61X8938
+odd=61X8937
+splice --verbose "$BUILD_DIR""$even""$fileext" "$BUILD_DIR""$odd""$fileext" "$BUILD_DIR""$even"_"$odd""$fileext"
