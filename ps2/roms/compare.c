@@ -8,8 +8,8 @@
 #define MAX_ROW_LEN 1024
 
 /*
- * Compare columns 10 through 37 with 49 through 76. Highlight cells that are different.
- * Then also highlight cells in columns 88 through 115. Difference between cells is 39.
+ * Compare columns 10 through 37 with 50 through 77. Highlight cells that are different.
+ * Then also highlight cells in columns 90 through 117. Difference between cells is 40.
  * Check rows 1 through 13.
  */
 
@@ -25,9 +25,7 @@ void appnd(char** ptr, char* cat) {
 int main(int argc, char* argv[]) {
     char row[MAX_ROW_LEN];
     char buf[MAX_ROW_LEN];
-    char buf2[MAX_ROW_LEN];
     char* ptr;
-    char* ptr2;
     int rownum = -1;
     int len;
     char* smul = "\e[4m\e[1m";
@@ -40,6 +38,18 @@ int main(int argc, char* argv[]) {
     if(!isatty(fileno(stdout)) && argc <= 1) {
         smul = "[u][b]";
         rmul = "[/b][/u]";
+    }
+
+    memset(buf, 0, MAX_ROW_LEN);
+
+    if(argc > 1 && !strcmp(argv[1], "--debug")) {
+        smul = "";
+        rmul = "";
+    }
+
+    if(argc > 1 && !strcmp(argv[1], "--standout")) {
+        smul = "\e[7m";
+        rmul = "\e[27m";
     }
 
     while(!feof(stdin)) {
@@ -56,11 +66,10 @@ int main(int argc, char* argv[]) {
             }
             row[len - 1] = '\0';
             rownum++;
-            if((len > 4) && !strncmp(row, "0000", 4) && len >= 115) {
+            if((len > 4) && !strncmp(row, "0000", 4) && len >= 79) {
                 /* 0 - 9 (10) */
                 fwrite(row, sizeof(row[0]), 10, stdout);
                 ptr = buf;
-                ptr2 = buf2;
                 diff[0] = 0;
                 diff[1] = 0;
                 diff[2] = 0;
@@ -70,7 +79,7 @@ int main(int argc, char* argv[]) {
                 diff[6] = 0;
                 diff[7] = 0;
                 diff[8] = 0;
-                for(i = 10; i <= 37; i++ ) {
+                for(i = 10; i <= 38; i++ ) {
                     idx = -1;
                     is_diff = 0;
                     switch(i) {
@@ -84,30 +93,29 @@ int main(int argc, char* argv[]) {
                         case 27: case 28: idx = 7; break;
                         default: idx = 8;
                     }
-                    if(idx < 8 && row[i] != row[i + 39]) {
+                    if(idx < 8 && row[i] != row[i + 40]) {
                         diff[idx] = 1;
                         is_diff = 1;
                     }
-                    if(i >= 30 && i <= 37) {
-                        idx = i - 30;
+                    if(i >= 31 && i <= 38) {
+                        idx = i - 31;
                         if(diff[idx]) is_diff = 1;
-                    }  
+                    }
                     if(is_diff) printf("%s", smul);
                     putchar(row[i]);
                     if(is_diff) printf("%s", rmul);
                     if(is_diff) appnd(&ptr, smul);
-                    *ptr++ = row[i + 39];
+                    *ptr++ = row[i + 40];
                     *ptr = '\0';
                     if(is_diff) appnd(&ptr, rmul);
-                    if(is_diff) appnd(&ptr2, smul);
-                    *ptr2++ = row[i + 39 + 39];
-                    *ptr2 = '\0';
-                    if(is_diff) appnd(&ptr2, rmul);
                 }
-                putchar(row[i]);
+                for(i = 39; i <= 49; i++ ) {
+                    putchar(row[i]);
+                }
                 fprintf(stdout, "%s", buf);
-                putchar(row[i + 39]);
-                fprintf(stdout, "%s", buf2);
+                for(i = 39 + 40; i < len; i++ ) {
+                    putchar(row[i]);
+                }
                 puts("");
             } else {
                 puts(row);
