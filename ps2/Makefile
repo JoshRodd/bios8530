@@ -42,6 +42,12 @@ clean:
 	rm -f $(DIST_DIR)/$(_TARGET2)
 	-rmdir $(DIST_DIR)
 
+veryclean:	clean
+	rm -f $(ODIR)/*.B*
+	rm -f $(DIST_DIR)/*.B*
+	-rmdir $(ODIR)
+	-rmdir $(DIST_DIR)
+
 dist:	$(TARGET) $(TARGET2)
 	mkdir -p $(DIST_DIR)
 	strip $<
