@@ -48,18 +48,21 @@ while read model even odd; do
         else
             need_file=1
         fi
-        if [ "$need_file" == "1" ]; then
+        if [ "$need_file" == "1" -a "$file" != 61X8938 -a "$file" != 61X8937 ]; then
             printf "Retrieving ROM %s for model %s...\n" "$file" "$model"
             curl -O http://ibmmuseum.com/BIOS/"$model"/"$file".BIN || exit
-        fi
-        sha="$(openssl dgst -sha256 "$file".BIN)"
-        entry="$(grep "^SHA256($file.BIN)= [0-9a-f][0-9a-f]*$" "$BASE_DIR"romlist_sha.txt)"
-        if [ "$sha" == "$entry" ]; then
-            printf "$file is good\n"
             need_file=0
-        else
-            printf "The file $BUILD_DIR$file.BIN is corrupt. Please delete it.\n" >&2
-            exit 1
+        fi
+        if [ "$need_file" == "0" ]; then
+            sha="$(openssl dgst -sha256 "$file".BIN)"
+            entry="$(grep "^SHA256($file.BIN)= [0-9a-f][0-9a-f]*$" "$BASE_DIR"romlist_sha.txt)"
+            if [ "$sha" == "$entry" ]; then
+                printf "$file is good\n"
+                need_file=0
+            else
+                printf "The file $BUILD_DIR$file.BIN is corrupt. Please delete it.\n" >&2
+                exit 1
+            fi
         fi
     done
 done < <(cat "$BASE_DIR"romlist.txt | sed '/^#/'d)
