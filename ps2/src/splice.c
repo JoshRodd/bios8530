@@ -113,6 +113,7 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
 }
 
 int rom_info() {
+    unsigned char c; unsigned char* ptr; int i;
     if(rom_size % 1024) fprintf(info, "Size: %zu bytes\t", rom_size);
     else fprintf(info, "Size: %dkB\t", (int)(rom_size / 1024) );
     if(rom_size >= 16) {
@@ -166,6 +167,12 @@ int rom_info() {
         }
     } else {
         fprintf(info, "ROM is less than 16 bytes; unable to deduce more information.\n");
+    }
+    c = 0; ptr = rom;
+    for(i = 0; i < rom_size; i++ )
+        c += *ptr++;
+    if(c) {
+        fprintf(info, "Warning: Invalid checksum %hhXh (-%hhXh)\n", ptr[-1], c);
     }
     return 0;
 }
