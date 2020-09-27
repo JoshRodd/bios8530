@@ -11,13 +11,11 @@ if len(sys.argv) > 1 and sys.argv[1] == '--inc':
 
 if asm:
     print("\
-                name    8X8FONT\n\
+                name    FONT8X8\n\
             \n\
 ; Typically placed at F000:FA6E - F000:FE6D\n\
             \n\
-DGROUP          group   CONST\n\
-\n\
-CONST           segment para public 'CODE'\n\
+BIOS_FONT8X8    segment byte public 'BIOS_ROM'\n\
 \n\
                 org     0fa6eh\n\
 ")
@@ -34,7 +32,7 @@ while i < padding_size:
     ss += '\t'
     i += 1
 
-with open("8X8FONT.BIN", "rb") as f:
+with open("FONT8X8.BIN", "rb") as f:
     for data in iter(partial(f.read, chunk_size), b''):
         x = int.from_bytes(data, byteorder='big')
         c = chr(x)
@@ -78,7 +76,7 @@ while i < len(xx) - padding_size:
 if asm:
     print("\
 \n\
-CONST           ends\n\
+BIOS_FONT8X8    ends\n\
 \n\
                 end\
 ");
