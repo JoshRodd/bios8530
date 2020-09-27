@@ -18,9 +18,12 @@ function check_file {
     shift
 
     if [ ! -f "$ARCHIVES_DIR""$filename" ]; then
+        if [ $url == "" ]; then
+            url=http://www.vcfed.org/forum/showthread.php?76874-PS-2-Model-30-8086-BIOS-dump"$suffix"
+        fi
         cat <<EOD
 Retrieve $filename from:
-http://www.vcfed.org/forum/showthread.php?76874-PS-2-Model-30-8086-BIOS-dump"$suffix"
+$url
 File size: $filesize bytes
 SHA256: $shasum
 Place it into "$ARCHIVES_DIR"
@@ -40,6 +43,7 @@ EOD
 
 check_file 61X8938_A58470_IBM87nwe26sept2020.zip 1424a92ce030e512d1defad653a2b590ef4391b1f93ef3b0bfb20dc4dddf98a1 26061 /page2
 check_file IBM_PS2-30.ZIP 453d9b82fb39d40f5dc41fc450083154b1dca86affa9a036824cba9f252b7ead 49324
+check_file 00F2122.BIN 944e24a2b5d158576dbe007dd37b26f950a4e1d134bced770332a884ffa3f055 32768 "" http://www.mediafire.com/file/j0bh15f4gnbky4a/file
 
 while read model even odd; do
     for file in "$even" "$odd"; do
@@ -48,7 +52,7 @@ while read model even odd; do
         else
             need_file=1
         fi
-        if [ "$need_file" == "1" -a "$file" != 61X8938 -a "$file" != 61X8937 ]; then
+        if [ "$need_file" == "1" -a "$file" != 61X8938 -a "$file" != 61X8937 -a "$file" != 00F2122 ]; then
             printf "Retrieving ROM %s for model %s...\n" "$file" "$model"
             curl -O http://ibmmuseum.com/BIOS/"$model"/"$file".BIN || exit
             need_file=0
