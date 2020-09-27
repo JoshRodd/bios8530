@@ -13,6 +13,8 @@ if asm:
     print("\
                 name    ROMBASIC\n\
             \n\
+; Load at F600:0000 - F600:7FFF\n\
+            \n\
 DGROUP          group   _TEXT\n\
 \n\
 _TEXT           segment para public 'CODE'\n\
