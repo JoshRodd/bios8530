@@ -1,0 +1,26 @@
+
+F000:6000 - F000:DFFF: ROM BASIC (origin at F600:0000)
+F000:F800 - F000:FA6D is mostly empty, except for:
+F000:F841:             JMP NEAR 0F76Eh
+F000:F84D:             JMP NEAR 0F778h
+F000:F859:             JMP NEAR 59DBh
+F000:FA6E - F000:FE6D:
+8x8 character font at F000:FA6E - F000:FE6D (1,024 bytes)
+128 characters X 8 bytes/character
+Mostly empty, except for:
+F000:FE6E:             JMP NEAR 5B56h
+F000:FEA5:             JMP NEAR 5F43h
+F000:FEF3 - F000:FF12: data
+F000:FF15 - F000:FF22: data
+F000:FF53:             IRET
+F000:FF54:             JMP NEAR 5EADh
+F000:FF5A:             CALL NEAR 0F0FCh
+F000:FF5D:             RET FAR
+F000:FF5E:             CALL NEAR 0EB1h
+F000:FF61:             RET FAR
+F000:FF62 - F000:FFEF: various code
+F000:FFF0:             JMP FAR F000:E05B ; Entry point
+F000:FFF5:             DB '12/12/86' ; BIOS revision date
+F000:FFFD:             DB 00h  ; Submodel 0FAh:00h = PS/2 Model 30
+F000:FFFE:             DB 0FAh ; Model 0FAh = PS/2 Model 25 or 30
+F000:FFFF:             DB ?    ; Checksum

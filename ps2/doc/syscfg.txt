@@ -1,0 +1,34 @@
+Based on 61X8938+61X8937 (PS/2 Model 30 Rev. 1, 12/12/86)
+
+Int 15h
+AH=0C0h
+
+On return: vector in ES:BX, points to F000:E6F5
+
+On 61X8938+61X8937 (8530) ROM:
+08 00 fa 00 01 b4 00 00 00 00 17
+
+Length: 8 bytes
+Model byte: 0FAh (PS/2 Model 25 or 30)
+Submodel byte: 0 (PS/2 Model 30)
+BIOS revision level: 1
+Feature information byte: 80h=1, BIOS uses DMA channel 3
+                          40h=0, One interrupt controller
+                          20h=1, Real-time clock (disagrees with page 5-45)
+                          10h=1, Int15h AH=4Fh called by Int 9 handler
+                          04h=1, EBDA is allocated
+
+struc   system_descriptor_table
+
+len     dw ?    ; Length of Descriptor in Bytes, Minimum is 8 Bytes
+model   db ?    ; Model Byte
+submodel db ?   ; Submodel Byte
+revision db ?   ; BIOS revision level
+feature db ?    ; Feature Information Byte 1 
+reserved dd ?   ;   80h: 1=BIOS uses DMA channel 3
+                ;   40h: 0=One interrupt controller
+                ;   20h: 0=No real-time clock
+                ;   10h: 1=Int15h AH=4Fh called by Int 9 handler
+                ;   04h: 1=EBDA is allocated
+
+ends
