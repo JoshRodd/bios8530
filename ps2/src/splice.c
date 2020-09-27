@@ -72,14 +72,16 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
         for(i = EVEN_FILE; i <= ODD_FILE; i++) feofs[i] = feof(fds[i]);
         for(i = EVEN_FILE; i <= ODD_FILE; i++) {
             chars[i] = fgetc(fds[i]);
-            if(!(chars[i] & 1)) bits_set[i] &= ~1;
-            if(!(chars[i] & 2)) bits_set[i] &= ~2;
-            if(!(chars[i] & 4)) bits_set[i] &= ~4;
-            if(!(chars[i] & 8)) bits_set[i] &= ~8;
-            if(!(chars[i] & 16)) bits_set[i] &= ~16;
-            if(!(chars[i] & 32)) bits_set[i] &= ~32;
-            if(!(chars[i] & 64)) bits_set[i] &= ~64;
-            if(!(chars[i] & 128)) bits_set[i] &= ~128;
+            if(*size <= 0x2180) {
+                if(!(chars[i] & 1)) bits_set[i] &= ~1;
+                if(!(chars[i] & 2)) bits_set[i] &= ~2;
+                if(!(chars[i] & 4)) bits_set[i] &= ~4;
+                if(!(chars[i] & 8)) bits_set[i] &= ~8;
+                if(!(chars[i] & 16)) bits_set[i] &= ~16;
+                if(!(chars[i] & 32)) bits_set[i] &= ~32;
+                if(!(chars[i] & 64)) bits_set[i] &= ~64;
+                if(!(chars[i] & 128)) bits_set[i] &= ~128;
+            }
             if(clear_bit_0_in_even && i == EVEN_FILE) chars[i] &= 0xFE;
             if(ferror(fds[i])) {
                 fprintf(stderr, "Error reading file %s: %s\n", filenames[i], strerror(errno));
@@ -114,27 +116,27 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
 
 int rom_info() {
     unsigned char c; unsigned char* ptr; int i;
-    if(rom_size % 1024) fprintf(info, "Size: %zu bytes\t", rom_size);
-    else fprintf(info, "Size: %dkB\t", (int)(rom_size / 1024) );
+    if(rom_size == 65536) ;
+    else if(rom_size % 1024) fprintf(info, "Size: %zu bytes\t", rom_size);
+    else fprintf(info, "Size: %dkB ", (int)(rom_size / 1024) );
     if(rom_size >= 16) {
         unsigned char* bootptr = &(rom[rom_size - 16]);
         if(bootptr[0] == 0xEA) { /* JMP FAR instruction */
             uint16_t off = bootptr[1]+(bootptr[2]<<8);
             uint16_t seg = bootptr[3]+(bootptr[4]<<8);
             unsigned char date[9];
-            fprintf(info, "Start: %X:%X\t", seg, off);
+            if(seg != 0xF000 || off != 0xE05B)
+                fprintf(info, "Start: %X:%X ", seg, off);
             memcpy(date, &(bootptr[5]), 8);
             date[8] = '\0';
             if(date[2] == '/' && date[5] == '/')
-                fprintf(info, "Date: %s\t", date);
+                fprintf(info, "%s ", date);
             else
-                fprintf(info, "Invalid date\t");
-            switch(bootptr[14]) {
-                case 0xFA: switch(bootptr[15]) {
-                    case 0xC3: fprintf(info, "8525"); break;
-                    default: fprintf(info, "8525/8530");
-                } break;
-                default: fprintf(info, "Unknown model type %hhXh", bootptr[14]);
+                fprintf(info, "No date. ");
+            switch(bootptr[14] | bootptr[13] << 8) {
+                case 0x00FA: fprintf(info, "8530"); break;
+                case 0xFFFA: fprintf(info, "8525"); break;
+                default: fprintf(info, "Unknown model type %hhXh (submodel %hhXh)", bootptr[14], bootptr[13]);
             }
         }
         /* Check for odd and even switched around */
