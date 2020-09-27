@@ -5,19 +5,20 @@ from functools import partial
 
 asm = 0
 height = 8
+bios_seg = 'F000'
+vector1 = 'FA6E'
+vector2 = 'FE6D'
 if len(sys.argv) > 1 and sys.argv[1] == '--asm':
     asm = 1
 if len(sys.argv) > 1 and sys.argv[1] == '--inc':
     asm = 0
 if len(sys.argv) > 2 and sys.argv[2] == '--16':
     height = 16
-
-bios_seg = 'F000'
-vector1 = 'FA6E'
-vector2 = 'FE6D'
-if height == 16:
+    vector1 = '3A30'
+    vector2 = '4A2F'
+if len(sys.argv) > 2 and sys.argv[2] == '--8':
     vector1 = '4A30'
-    vector2 = '5A30'
+    vector2 = '512F'
 
 if asm:
     print("\
