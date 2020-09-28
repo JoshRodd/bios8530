@@ -16,23 +16,20 @@ http://ibm-pc.org/manuals/ibm/ps2/PS2_Model_25_Technical_Reference_Jun87.pdf
 
 All ROMs 32k bytes per piece, 64kB total with odd and even.
 
-68X1627+68X1687     8530    09/02/1986  Revision 00
+68X1645+68X1693     8530    09/02/1986  Revision 00  Files are misnamed 61X1687 and 61X1627
 61X8938+61X8937     8530    12/12/1986  Revision 01
 61X8940+61X8939     8530    02/05/1987  Revision 02
 00F2122+00F2123     8525    06/26/1987  Revision 00
 ??                  8525    11/02/1988? Revision 01?
 33F4498+33F4499     8530    01/31/1989  Revision 04
 
-There is a copy of 61X8938.BIN that has bit 0 always set. A date of
-13/12/1987 is an artifact of this.
-
-   Filenames      ROM    Model                Font vectors           ROM BASIC   Copy-    Part numbers 
-  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8      vector   rights    Even     Odd 
-68X1687 68X1627: 09/02/86 8530 8x16: 3960h 8x8V: 4960h 8x8: FA6Eh BASIC: 6000h 1981 1987 68X1645 68X1693  Part number mismatch
-61X8938 61X8937: 12/12/86 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h 1981 1987 61X8938 61X8937
-61X8940 61X8939: 02/05/87 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h 1981 1987 61X8940 61X8939
-00F2122 00F2123: 06/26/87 8525 8x16: 2F48h 8x8V: 3F48h 8x8: FA6Eh BASIC: 6000h 1981 1987 00F2122 00F2123
-33F4498 33F4499: 01/31/89 8530 8x16: 3A70h 8x8V: 4A70h 8x8: FA6Eh BASIC: 6000h 1981 1989 33F4498 33F4499
+   Filenames      ROM    Model                Font vectors        ROM BASIC      BIOS    Copy-   Part numbers  
+  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8   vector    revision  rights   Even     Odd  
+68X1645 68X1693: 09/02/86 8530 8x16: 3960h 8x8V: 4960h 8x8: FA6Eh BASIC: 6000h Rev. 0 1981 1987 68X1645 68X1693 
+61X8938 61X8937: 12/12/86 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h Rev. 1 1981 1987 61X8938 61X8937 
+61X8940 61X8939: 02/05/87 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h Rev. 2 1981 1987 61X8940 61X8939 
+00F2122 00F2123: 06/26/87 8525 8x16: 2F48h 8x8V: 3F48h 8x8: FA6Eh BASIC: 6000h Rev. 0 1981 1987 00F2122 00F2123 
+33F4498 33F4499: 01/31/89 8530 8x16: 3A70h 8x8V: 4A70h 8x8: FA6Eh BASIC: 6000h Rev. 4 1981 1989 33F4498 33F4499
 
 Of note:
 1. 68X1687 and 68X1627 don't match the part numbers actually inside the ROMs.

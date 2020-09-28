@@ -24,13 +24,13 @@ Run `./build_roms.sh` to build the ROMs, which will be placed
 into `dist/`. If successful, you should see output like this:
 
 ```
-   Filenames      ROM    Model                Font vectors           ROM BASIC   Copy-    Part numbers  
-  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8      vector   rights    Even     Odd  
-68X1687 68X1627: 09/02/86 8530 8x16: 3960h 8x8V: 4960h 8x8: FA6Eh BASIC: 6000h 1981 1987 68X1645 68X1693  Part number mismatch
-61X8938 61X8937: 12/12/86 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h 1981 1987 61X8938 61X8937 
-61X8940 61X8939: 02/05/87 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h 1981 1987 61X8940 61X8939 
-00F2122 00F2123: 06/26/87 8525 8x16: 2F48h 8x8V: 3F48h 8x8: FA6Eh BASIC: 6000h 1981 1987 00F2122 00F2123 
-33F4498 33F4499: 01/31/89 8530 8x16: 3A70h 8x8V: 4A70h 8x8: FA6Eh BASIC: 6000h 1981 1989 33F4498 33F4499 
+   Filenames      ROM    Model                Font vectors        ROM BASIC      BIOS    Copy-   Part numbers  
+  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8   vector    revision  rights   Even     Odd  
+68X1645 68X1693: 09/02/86 8530 8x16: 3960h 8x8V: 4960h 8x8: FA6Eh BASIC: 6000h Rev. 0 1981 1987 68X1645 68X1693 
+61X8938 61X8937: 12/12/86 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h Rev. 1 1981 1987 61X8938 61X8937 
+61X8940 61X8939: 02/05/87 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h Rev. 2 1981 1987 61X8940 61X8939 
+00F2122 00F2123: 06/26/87 8525 8x16: 2F48h 8x8V: 3F48h 8x8: FA6Eh BASIC: 6000h Rev. 0 1981 1987 00F2122 00F2123 
+33F4498 33F4499: 01/31/89 8530 8x16: 3A70h 8x8V: 4A70h 8x8: FA6Eh BASIC: 6000h Rev. 4 1981 1989 33F4498 33F4499
 ```
 
 Extractors

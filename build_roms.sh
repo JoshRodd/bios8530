@@ -41,7 +41,7 @@ while read model even odd; do
     output="$("$SPLICE" --verbose "$BUILD_DIR""$even""$fileext" "$BUILD_DIR""$odd""$fileext" "$BUILD_DIR""$even"_"$odd"_"$model""$fileext")"
     if [ "$?" == 0 ]; then mv "$BUILD_DIR""$even"_"$odd"_"$model""$fileext" "$DIST_DIR"; fi
     printf "%s" "$output"
-    read romdate ibmmodel a1 vector8x16 a2 vector8x8v a3 vector8x8 a4 basicvector copyright copyrightend evenpn oddpn < <(printf "%s\n" "$output")
+    read romdate ibmmodel a1 vector8x16 a2 vector8x8v a3 vector8x8 a4 basicvector copyright copyrightend a5 revision evenpn oddpn < <(printf "%s\n" "$output")
     if [ "$model" != "$ibmmodel" ]; then printf " Model mismatch"; fi
     if [ "$evenpn" != "$even" -a "$oddpn" != "$odd" ]; then printf " Part number mismatch";
     else
