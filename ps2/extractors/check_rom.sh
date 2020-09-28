@@ -5,10 +5,12 @@
 ./to_inc.py --asm > ROMBASIC.ASM || exit
 ./font_to_inc.py --asm > FONT8X8.ASM || exit
 ./font_to_inc.py --asm --16 > FONT8X16.ASM || exit
+./font_to_inc.py --asm --8 > FONT8X8V.ASM || exit
 
-uasm -bin -Fo=ROMBASIC.BINTEST ROMBASIC.ASM || exit
-uasm -bin -Fo=FONT8X8.BINTEST FONT8X8.ASM || exit
-uasm -bin -Fo=FONT8X16.BINTEST FONT8X16.ASM || exit
+uasm -q -bin -Fo=ROMBASIC.BINTEST ROMBASIC.ASM || exit
+uasm -q -bin -Fo=FONT8X8.BINTEST FONT8X8.ASM || exit
+uasm -q -bin -Fo=FONT8X16.BINTEST FONT8X16.ASM || exit
+uasm -q -bin -Fo=FONT8X8V.BINTEST FONT8X8V.ASM || exit
 
 num=$(openssl dgst -sha256 ROMBASIC.BINTEST ROMBASIC.BIN | awk '{print $2}' | sort -u | wc -l)
 if [ $num != 1 ]; then

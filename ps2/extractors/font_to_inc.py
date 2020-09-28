@@ -8,6 +8,7 @@ height = 8
 bios_seg = 'F000'
 vector1 = 'FA6E'
 vector2 = 'FE6D'
+infile = 'FONT8X8'
 if len(sys.argv) > 1 and sys.argv[1] == '--asm':
     asm = 1
 if len(sys.argv) > 1 and sys.argv[1] == '--inc':
@@ -16,22 +17,26 @@ if len(sys.argv) > 2 and sys.argv[2] == '--16':
     height = 16
     vector1 = '3A30'
     vector2 = '4A2F'
+    infile = 'FONT8X16'
 if len(sys.argv) > 2 and sys.argv[2] == '--8':
     vector1 = '4A30'
     vector2 = '512F'
+    infile = 'FONT8X8V'
+
+segment = 'BIOS_{}{}'.format(infile, ' ' * (len(infile) - 3))
 
 if asm:
     print("\
-                name    FONT8X{}\n\
+                name    {}\n\
             \n\
 ; Typically placed at {}:{} - {}:{}\n\
             \n\
-BIOS_FONT8X{}{}   segment byte public 'BIOS_ROM'\n\
+BIOS_{}segment byte public 'BIOS_ROM'\n\
 \n\
                 org     0{}h\n\
-".format(height,
+".format(infile,
     bios_seg, vector1, bios_seg, vector2,
-    height, '' if height >= 10 else ' ',
+    segment,
     vector1.lower()))
 
 chunk_size = 1
@@ -46,7 +51,7 @@ while i < padding_size:
     ss += '\t'
     i += 1
 
-with open("FONT8X{}.BIN".format(height), "rb") as f:
+with open("{}.BIN".format(infile), "rb") as f:
     for data in iter(partial(f.read, chunk_size), b''):
         x = int.from_bytes(data, byteorder='big')
         c = chr(x)
@@ -90,7 +95,7 @@ while i < len(xx) - padding_size:
 if asm:
     print("\
 \n\
-BIOS_FONT8X{}{}   ends\n\
+BIOS_{}ends\n\
 \n\
                 end\
-".format(height, '' if height >= 10 else ''));
+".format(segment));

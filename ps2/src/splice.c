@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stddef.h>
 #include <string.h>
 #include <errno.h>
 
@@ -51,11 +52,38 @@ int usage_message(char* argv0) {
 #define NUM_FILENAMES 3
 
 #define MAX_ROM_SIZE 1048576
-unsigned char rom[MAX_ROM_SIZE];
+uint8_t rom[MAX_ROM_SIZE];
 size_t rom_size = 0;
 FILE* info = NULL;
 int bits_set[2];
 int clear_bit_0_in_even = 0;
+
+#define SIG8X16_OFFSET (219 * 16)
+uint8_t sig8x16[] = {
+    255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255     /*; CHR$(219)*/
+   ,0,0,0,0,0,0,0,255,255,255,255,255,255,255,255,255                   /*; CHR$(220)*/
+   ,240,240,240,240,240,240,240,240,240,240,240,240,240,240,240,240     /*; CHR$(221)*/
+   ,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15                     /*; CHR$(222)*/
+};
+
+#define SIG8X8V_OFFSET (219 * 8)
+uint8_t sig8x8v[] = {
+    255,255,255,255,255,255,255,255     /*; CHR$(219)*/
+   ,0,0,0,0,255,255,255,255             /*; CHR$(220)*/
+   ,240,240,240,240,240,240,240,240     /*; CHR$(221)*/
+   ,15,15,15,15,15,15,15,15             /*; CHR$(222)*/
+};
+
+#define SIG8X8_OFFSET (17 * 8)
+uint8_t sig8x8[] = {
+    2,14,62,254,62,14,2,0               /*; CHR$(17)*/
+   ,24,60,126,24,24,126,60,24           /*; CHR$(18)*/
+   ,102,102,102,102,102,0,102,0         /*; CHR$(19)*/
+   ,127,219,219,123,27,27,27,0          /*; CHR$(20)*/
+};
+
+#define SIGROMBASIC_OFFSET 0x7FDD
+unsigned char sigrombasic[] = "Bytes free";
 
 int combine_roms(char* filenames[], FILE* fds[], int verbose) {
     unsigned char chars[2];
@@ -117,7 +145,7 @@ int combine_roms(char* filenames[], FILE* fds[], int verbose) {
 int rom_info() {
     unsigned char c; unsigned char* ptr; int i;
     if(rom_size == 65536) ;
-    else if(rom_size % 1024) fprintf(info, "Size: %zu bytes\t", rom_size);
+    else if(rom_size % 1024) fprintf(info, "Size: %zu bytes ", rom_size);
     else fprintf(info, "Size: %dkB ", (int)(rom_size / 1024) );
     if(rom_size >= 16) {
         unsigned char* bootptr = &(rom[rom_size - 16]);
@@ -134,9 +162,36 @@ int rom_info() {
             else
                 fprintf(info, "No date. ");
             switch(bootptr[14] | bootptr[13] << 8) {
-                case 0x00FA: fprintf(info, "8530"); break;
-                case 0xFFFA: fprintf(info, "8525"); break;
+                case 0x00FA: fprintf(info, "8530 "); break;
+                case 0xFFFA: fprintf(info, "8525 "); break;
                 default: fprintf(info, "Unknown model type %hhXh (submodel %hhXh)", bootptr[14], bootptr[13]);
+            }
+            {
+                uint8_t* ptrfind = NULL;
+                ptrdiff_t offset;
+                ptrdiff_t romplussize;
+                uint8_t* romplus;
+
+                ptrfind = memmem(rom, rom_size, sig8x16, sizeof(sig8x16));
+                if(ptrfind != NULL) {
+                    offset = ptrfind - rom - SIG8X16_OFFSET;
+                    fprintf(info, "8x16: %tXh ", offset); }
+
+                ptrfind = memmem(rom, rom_size, sig8x8v, sizeof(sig8x8v));
+                if(ptrfind != NULL) {
+                    offset = ptrfind - rom - SIG8X8V_OFFSET;
+                    fprintf(info, "8x8V: %tXh ", offset); }
+
+                romplussize = offset + 8 * 256;
+                ptrfind = memmem(rom + romplussize, rom_size - romplussize, sig8x8, sizeof(sig8x8));
+                if(ptrfind != NULL) {
+                    offset = ptrfind - rom - SIG8X8_OFFSET;
+                    fprintf(info, "8x8: %tXh ", offset); }
+
+                ptrfind = memmem(rom, rom_size, sigrombasic, sizeof(sigrombasic));
+                if(ptrfind != NULL) {
+                    offset = ptrfind - rom - SIGROMBASIC_OFFSET;
+                    fprintf(info, "BASIC: %tXh ", offset); }
             }
         }
         /* Check for odd and even switched around */

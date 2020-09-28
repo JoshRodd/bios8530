@@ -32,13 +32,14 @@ cp "$ARCHIVES_DIR"00F2122.BAD 00F2122.BAD || exit
 cp "$ARCHIVES_DIR"00F2122.BIN 00F2122.BIN || exit
 rmdir IBM_PS2-30 || exit
 
+printf "\n%s\n" 'Even ROM+Odd ROM   Date   Model      Font vectors'
 while read model even odd; do
     even="$(basename "$even" "$fileext")"
     odd="$(basename "$odd" "$fileext")"
-    echo
-    echo -n $model ROM from $even and $odd:' '
+    printf "%s+%s: " "$even" "$odd"
     "$SPLICE" --verbose "$BUILD_DIR""$even""$fileext" "$BUILD_DIR""$odd""$fileext" "$BUILD_DIR""$even"_"$odd"_"$model""$fileext"
     if [ "$?" == 0 ]; then mv "$BUILD_DIR""$even"_"$odd"_"$model""$fileext" "$DIST_DIR"; fi
+    printf "\n"
 done < <(cat "$BASE_DIR"romlist.txt | sed '/^#/'d)
 
 #model=8525
