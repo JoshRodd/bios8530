@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <ctype.h>
 #include <string.h>
 #include <errno.h>
 
@@ -192,6 +193,104 @@ int rom_info() {
                 if(ptrfind != NULL) {
                     offset = ptrfind - rom - SIGROMBASIC_OFFSET;
                     fprintf(info, "BASIC: %tXh ", offset); }
+            }
+            {
+                char part_number[8] = "#######";                            /* 0000-0006:  7 */ /* OK */
+                char copyright1[] = " (C) COPYRIGHT IBM CORPORATION 1981,1987 " \
+                                  " ALL RIGHTS RESERVED";                   /* 0007-0043: 61 */ /* OK */
+                /* Doubled up in 0044-008B */                               /* 0044-008B: 72 */ /* OK */
+                char part_number_even[8] = "#######";                       /* 0000-0006:  7 */ /* OK */
+                char part_number_odd[8] = "#######";                        /* 0000-0006:  7 */ /* OK */
+                char copyright3[] = " (C) COPR. IBM CORP 1981,1987";        /* 0007-0023: 29 */ /* OK */
+                char model_info[4] = {' ', 0xFA, 0xB0, 0x00};               /* 008C-008F:  4 */ /* OK */
+                char model_info2[4] = {' ', ' ', 0xFA, 0xB0};               /* 008C-008F:  4 */ /* OK */
+                char copyright4[] = "COPR. IBM 1981, 1987     ";            /* E008-E01F: 24 */ /* OK */
+                char copyright4_original[24];                               /* E008-E01F: 24 */ /* OK */
+                int i, j;
+                char even_copy[36], odd_copy[36];
+                char copyright1_year_1[5];
+                char copyright1_year_2[5];
+                char copyright3_year_1[5];
+                char copyright3_year_2[5];
+                char copyright4_year_1[5];
+                char copyright4_year_2[5];
+                char copyright4_old_2[5] = "1987";
+
+                for(i = 0, j = 0x44; i < (72 / 2); i++ ) {
+                    even_copy[i] = rom[j++];
+                    odd_copy[i] = rom[j++];
+                }
+                if(memcmp(&even_copy[7], &odd_copy[7], 29)) {
+                    if(!memcmp(&even_copy[7 + 20],  &odd_copy[7 + 20], 4) &&
+                       !memcmp(&even_copy[7 + 25],  &odd_copy[7 + 24], 4) &&
+                                even_copy[7 + 24] == ',' &&
+                                 odd_copy[7 + 28] == ' ') {
+                        memcpy(&odd_copy[ 7 + 24], &even_copy[7 + 24], 5); /* copies ",19xx" over top of "19xx " */
+                   }
+                   if(memcmp(&even_copy[7], &odd_copy[7], 29))
+                        fprintf(info, "Copyright #3 on even and odd ROM are not matched:\n" \
+                            "Even: <%29.29s>\nOdd:  <%29.29s>\n",
+                            &even_copy[7], &odd_copy[7]);
+                }
+
+                memcpy(copyright1_year_1,       &rom[7 + 31], 4); copyright1_year_1[4] = '\0';
+                memcpy(copyright1_year_2,       &rom[7 + 36], 4); copyright1_year_2[4] = '\0';
+                memcpy(copyright3_year_1, &even_copy[7 + 20], 4); copyright3_year_1[4] = '\0';
+                memcpy(copyright3_year_2, &even_copy[7 + 25], 4); copyright3_year_2[4] = '\0';
+                                                      /* 20
+                                                       * 24 */
+                memcpy(copyright4_year_1,  &rom[0xE008 + 10], 4); copyright4_year_1[4] = '\0';
+                memcpy(copyright4_year_2,  &rom[0xE008 + 16], 4); copyright4_year_2[4] = '\0';
+
+                for(i = 0; i < 4; i++ ) {
+                    if(!isdigit(copyright1_year_1[i])) {
+                        fprintf(info, "Copyright #1 first year is not a number: %4.4s\n", copyright1_year_1);
+                        break;
+                    }
+                }
+
+                for(i = 0; i < 4; i++ ) {
+                    if(!isdigit(copyright1_year_2[i])) {
+                        fprintf(info, "Copyright #1 last year is not a number: %4.4s\n", copyright1_year_2);
+                        break;
+                    }
+                }
+
+                fprintf(info, "%4.4s %4.4s ", copyright1_year_1, copyright1_year_2);
+
+                if(memcmp(copyright1_year_1, copyright4_year_1, 4)) fprintf(info, "Copyright #4 first year does not match: %4.4s\n", copyright4_year_1);
+                if(memcmp(copyright1_year_2, copyright4_year_2, 4) &&
+                   memcmp(copyright4_year_2, copyright4_old_2,  4)) fprintf(info,  "Copyright #4 last year does not match: %4.4s\n", copyright4_year_2);
+                if(memcmp(copyright1_year_1, copyright3_year_1, 4)) fprintf(info, "Copyright #3 first year does not match: %4.4s\n", copyright3_year_1);
+                if(memcmp(copyright1_year_2, copyright3_year_2, 4)) fprintf(info,  "Copyright #3 last year does not match: %4.4s\n", copyright3_year_2);
+
+                memcpy(&copyright1[31], copyright1_year_1, 4);
+                memcpy(&copyright1[36], copyright1_year_2, 4);
+                memcpy(&copyright3[20], copyright1_year_1, 4);
+                memcpy(&copyright3[25], copyright1_year_2, 4);
+                memcpy(copyright4_original, copyright4, 24);
+                memcpy(&copyright4[10], copyright1_year_1, 4);
+                memcpy(&copyright4[16], copyright1_year_2, 4);
+
+                memcpy(part_number, rom, 7); part_number[7] = '\0';
+                if(memcmp(copyright1, &rom[7], 61))
+                    fprintf(info, "Copyright #1 mismatch:<%61.61s>\n", &rom[7]);
+                if(memcmp(copyright4, &rom[0xE008], 24))
+                    if(memcmp(copyright4_original, &rom[0xE008], 24))
+                    fprintf(info, "Copyright #4 mismatch:<%24.24s>\n", &rom[0xE008] );
+                if(memcmp(model_info, &rom[0x008C], 4))
+                    if(memcmp(model_info2, &rom[0x008C], 4))
+                        fprintf(info, "Model information mismatch: %hhX %hhX %hhX %hhX\n", 
+                            rom[0x008C], rom[0x008C + 1], rom[0x008C + 2], rom[0x008C + 3]);
+                memcpy(part_number_even, even_copy, 7); part_number_even[7] = '\0';
+                memcpy(part_number_odd ,  odd_copy, 7); part_number_odd [7] = '\0';
+                if(memcmp(&even_copy[7], copyright3, 29))
+                    fprintf(info, "Copyright #3 on even ROM mismatch:<%29.29s>\n", &even_copy[7] );
+                if(memcmp(&odd_copy[7], copyright3, 29))
+                    fprintf(info, "Copyright #3 on odd ROM mismatch:<%29.29s>\n",  &odd_copy[7] );
+                fprintf(info, "%s %s ", part_number, part_number_odd);
+                if(strcmp(part_number, part_number_even))
+                    fprintf(info, "Part number does not match even part number: %s", part_number_even);
             }
         }
         /* Check for odd and even switched around */
