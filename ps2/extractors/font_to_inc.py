@@ -22,6 +22,8 @@ if len(sys.argv) > 2 and sys.argv[2] == '--8':
     vector1 = '4A30'
     vector2 = '512F'
     infile = 'FONT8X8V'
+if len(sys.argv) > 3:
+    infile = sys.argv[3]
 
 segment = 'BIOS_{}{}'.format(infile, ' ' * (len(infile) - 3))
 

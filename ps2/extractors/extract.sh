@@ -10,12 +10,12 @@ rm -f *_FONT8X8V.BIN
 # F000:6000-F000:DFFF or # F600:0000-F000:7FFF
 for x in ../dist/*.BIN; do
 #    "$SPLICE" "$x"; echo
-    read a1 a2 a3 x1 a4 x2 a5 x3 a6 x4 < <("$SPLICE" "$x" | tr -d 'h')
+    read a1 a2 a3 x1 a4 x2 a5 x3 a6 x4 a77 < <("$SPLICE" "$x" | tr -d 'h')
     d1=$(printf "ibase=16\n%s\n" "$x1" | bc)
     d2=$(printf "ibase=16\n%s\n" "$x2" | bc)
     d3=$(printf "ibase=16\n%s\n" "$x3" | bc)
     d4=$(printf "ibase=16\n%s\n" "$x4" | bc)
-    if [ "$x" == ../dist/68X1687_68X1627.BIN ]; then
+    if [ "$(basename $x)" == "68X1687_68X1627_8530.BIN" ]; then
         dd bs=1 skip=$d1 count=4096 if=$x of="$(basename $x)"_OLDF8X16.BIN 2>/dev/null || exit
     else
         dd bs=1 skip=$d1 count=4096 if=$x of="$(basename $x)"_FONT8X16.BIN 2>/dev/null || exit
