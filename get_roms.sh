@@ -53,8 +53,14 @@ while read model even odd; do
             need_file=1
         fi
         if [ "$need_file" == "1" -a "$file" != 61X8938 -a "$file" != 61X8937 -a "$file" != 00F2122 ]; then
+            infile="$file".BIN
+            outfile="$file".BIN
+            if [ "$file" == 68X1645 ]; then infile=68X1687.BIN; fi
+            if [ "$file" == 68X1693 ]; then infile=68X1627.BIN; fi
             printf "Retrieving ROM %s for model %s...\n" "$file" "$model"
-            curl -O http://ibmmuseum.com/BIOS/"$model"/"$file".BIN || exit
+            url=http://ibmmuseum.com/BIOS/"$model"/"$infile"
+            printf "%s\n" "$url"
+            curl -o "$outfile" "$url" || exit
             need_file=0
         fi
         if [ "$need_file" == "0" ]; then

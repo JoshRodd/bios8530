@@ -25,9 +25,9 @@ printf -- '-n ';
 diff <(echo 1; xxd -c 8 $ROM0E"_"$ROM0O"_"*.BIN) <(echo 2;xxd -c 8 $ROM1E"_"$ROM1O"_"*"$CHECK_BAD") | grep '^[0-9]' | sed -e s'/^/-e /' -e s'/c.*$/p/' | tr '\n' ' '
 )"
 
-paste -d'|' <(echo -e $ROM0E+$ROM0O'........................'; xxd -c 8 $ROM0E"_"$ROM0O"_"*.BIN) <(echo -e $ROM1E+$ROM1O'........................'; xxd -c 8 $ROM1E"_"$ROM1O"_"*"$CHECK_BAD") | sed $cmds | sed -e s'/  /- /'g
+paste -d'|' <(echo -e $ROM0E+$ROM0O'........................'; xxd -c 8 $ROM0E"_"$ROM0O"_"*.BIN) <(echo -e $ROM1E+$ROM1O'........................'; xxd -c 8 $ROM1E"_"$ROM1O"_"*"$CHECK_BAD") | sed $cmds | sed -e s'/  /- /'g | ../bin/romcompare
 
-cat <<EOD
-          1         2         3         4         5         6         7
-0123456789012345678901234567890123456789012345678901234567890123456789012345678
-EOD
+#cat <<EOD
+#          1         2         3         4         5         6         7
+#0123456789012345678901234567890123456789012345678901234567890123456789012345678
+#EOD

@@ -32,8 +32,8 @@ cp "$ARCHIVES_DIR"00F2122.BAD 00F2122.BAD || exit
 cp "$ARCHIVES_DIR"00F2122.BIN 00F2122.BIN || exit
 rmdir IBM_PS2-30 || exit
 
-printf "\n%s\n" '   Filenames      ROM    Model                Font vectors           ROM BASIC   Copy-    Part numbers  '
-printf   "%s\n" '  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8      vector   rights    Even     Odd  '
+printf "\n%s\n" '   Filenames      ROM    Model                Font vectors        ROM BASIC      BIOS    Copy-   Part numbers  '
+printf   "%s\n" '  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8   vector    revision  rights   Even     Odd  '
 while read model even odd; do
     even="$(basename "$even" "$fileext")"
     odd="$(basename "$odd" "$fileext")"

@@ -86,6 +86,18 @@ uint8_t sig8x8[] = {
 #define SIGROMBASIC_OFFSET 0x7FDD
 unsigned char sigrombasic[] = "Bytes free";
 
+uint8_t sigsyscfg[] = {
+    0x08,0x00,0xfa,0x00,0x01,0xb4,0x00,0x00,0x00,0x00
+};
+
+#define SIGSYSCFG_1_START 0
+#define SIGSYSCFG_1_END 2
+#define SIGSYSCFG_SUBMODEL 3
+#define SIGSYSCFG_BIOS_REVISION 4
+#define SIGSYSCFG_CONFIGURATION 5
+#define SIGSYSCFG_2_START 6
+#define SIGSYSCFG_2_END 9
+
 int combine_roms(char* filenames[], FILE* fds[], int verbose) {
     unsigned char chars[2];
     int feofs[2];
@@ -193,6 +205,29 @@ int rom_info() {
                 if(ptrfind != NULL) {
                     offset = ptrfind - rom - SIGROMBASIC_OFFSET;
                     fprintf(info, "BASIC: %tXh ", offset); }
+
+                ptrfind = memmem(rom, rom_size,
+                    &sigsyscfg[SIGSYSCFG_1_START], SIGSYSCFG_1_END - SIGSYSCFG_1_START + 1);
+                if(ptrfind != NULL) {
+                    offset = ptrfind - rom;
+                    if(!memcmp(&rom[offset + SIGSYSCFG_2_START],
+                        &sigsyscfg[SIGSYSCFG_2_START], SIGSYSCFG_2_END - SIGSYSCFG_2_START + 1)) {
+                        fprintf(info, "Rev. %hhX ", rom[offset + SIGSYSCFG_BIOS_REVISION]);
+                    } else {
+                        fprintf(info,"\n\n");
+                        fprintf(info,"%hhX%hhX%hhX%hhX\n",
+                            rom[offset + SIGSYSCFG_2_START + 0],
+                            rom[offset + SIGSYSCFG_2_START + 1],
+                            rom[offset + SIGSYSCFG_2_START + 2],
+                            rom[offset + SIGSYSCFG_2_START + 3]);
+                        fprintf(info,"%hhX%hhX%hhX%hhX\n",
+                            sigsyscfg[SIGSYSCFG_2_START + 0],
+                            sigsyscfg[SIGSYSCFG_2_START + 1],
+                            sigsyscfg[SIGSYSCFG_2_START + 2],
+                            sigsyscfg[SIGSYSCFG_2_START + 3]);
+                        fprintf(info,"\n\n");
+                    }
+                }
             }
             {
                 char part_number[8] = "#######";                            /* 0000-0006:  7 */ /* OK */
