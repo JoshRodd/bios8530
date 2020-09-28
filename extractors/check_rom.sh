@@ -14,6 +14,12 @@ uasm -q -bin -Fo=FONT8X16.BINTEST FONT8X16.ASM || exit
 uasm -q -bin -Fo=OLDF8X16.BINTEST OLDF8X16.ASM || exit
 uasm -q -bin -Fo=FONT8X8V.BINTEST FONT8X8V.ASM || exit
 
+./to_inc.py --inc > ROMBASIC.INC || exit
+./font_to_inc.py --inc > FONT8X8.INC || exit
+./font_to_inc.py --inc --16 > FONT8X16.INC || exit
+./font_to_inc.py --inc --16 OLDF8X16 > OLDF8X16.INC || exit
+./font_to_inc.py --inc --8 > FONT8X8V.INC || exit
+
 num=$(openssl dgst -sha256 ROMBASIC.BINTEST ROMBASIC.BIN | awk '{print $2}' | sort -u | wc -l)
 if [ $num != 1 ]; then
     printf "Warning: ROM BASIC images do not match. Check the following list.\n"

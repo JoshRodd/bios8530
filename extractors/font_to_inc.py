@@ -9,21 +9,27 @@ bios_seg = 'F000'
 vector1 = 'FA6E'
 vector2 = 'FE6D'
 infile = 'FONT8X8'
+use_org = 1
 if len(sys.argv) > 1 and sys.argv[1] == '--asm':
     asm = 1
 if len(sys.argv) > 1 and sys.argv[1] == '--inc':
     asm = 0
+    use_org = 0
 if len(sys.argv) > 2 and sys.argv[2] == '--16':
     height = 16
     vector1 = '3A30'
     vector2 = '4A2F'
     infile = 'FONT8X16'
+    use_org = 0
 if len(sys.argv) > 2 and sys.argv[2] == '--8':
     vector1 = '4A30'
     vector2 = '512F'
     infile = 'FONT8X8V'
+    use_org = 0
 if len(sys.argv) > 3:
     infile = sys.argv[3]
+    if infile == 'OLDF8X16':
+        use_org = 1
 
 segment = 'BIOS_{}{}'.format(infile, ' ' * (len(infile) - 3))
 
@@ -31,15 +37,16 @@ if asm:
     print("\
                 name    {}\n\
             \n\
-; Typically placed at {}:{} - {}:{}\n\
+; {}laced at {}:{} - {}:{}\n\
             \n\
 BIOS_{}segment byte public 'BIOS_ROM'\n\
 \n\
-                org     0{}h\n\
+{}\
 ".format(infile,
+    'P' if use_org else 'Typically p',
     bios_seg, vector1, bios_seg, vector2,
     segment,
-    vector1.lower()))
+    ("                org     0" + vector1.lower() + "h\n") if use_org else ""))
 
 chunk_size = 1
 padding_size = 8

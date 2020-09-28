@@ -15,7 +15,7 @@ for x in ../dist/*.BIN; do
     d2=$(printf "ibase=16\n%s\n" "$x2" | bc)
     d3=$(printf "ibase=16\n%s\n" "$x3" | bc)
     d4=$(printf "ibase=16\n%s\n" "$x4" | bc)
-    if [ "$(basename $x)" == "68X1687_68X1627_8530.BIN" ]; then
+    if [ "$(basename $x)" == "68X1645_68X1693_8530.BIN" ]; then
         dd bs=1 skip=$d1 count=4096 if=$x of="$(basename $x)"_OLDF8X16.BIN 2>/dev/null || exit
     else
         dd bs=1 skip=$d1 count=4096 if=$x of="$(basename $x)"_FONT8X16.BIN 2>/dev/null || exit
