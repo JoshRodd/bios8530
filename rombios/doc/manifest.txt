@@ -14,28 +14,37 @@ http://www.mediafire.com/file/j0bh15f4gnbky4a/file - 00F2122
 Relevant manuals:
 http://ibm-pc.org/manuals/ibm/ps2/PS2_Model_25_Technical_Reference_Jun87.pdf
 
-All ROMs 32Kbytes per piece
+All ROMs 32k bytes per piece, 64kB total with odd and even.
 
-Part numbers
-68X1627+68X1687     8530    09/02/1986  'Revision 00'
-61X8938+61X8937     8530    12/12/1986  'Revision 01'
-61X8940+61X8939     8530    02/05/1987  'Revision 02'
-00F2122+00F2123     8525    06/26/1987  'Revision 00'
-??                  8525    11/02/1988? 'Revision 01'
-33F4498+33F4499     8530    01/31/1989  'Revision 04'
-
-The 8530's Revision 01 to Revision 02 had very few changes other than some
-different data in a few tables.
+68X1627+68X1687     8530    09/02/1986  Revision 00
+61X8938+61X8937     8530    12/12/1986  Revision 01
+61X8940+61X8939     8530    02/05/1987  Revision 02
+00F2122+00F2123     8525    06/26/1987  Revision 00
+??                  8525    11/02/1988? Revision 01?
+33F4498+33F4499     8530    01/31/1989  Revision 04
 
 There is a copy of 61X8938.BIN that has bit 0 always set. A date of
 13/12/1987 is an artifact of this.
 
-8530 ROM from 68X1687 and 68X1627: Size: 64kB	Start: F000:E05B	Date: 09/02/86	8525/8530
-8530 ROM from 61X8938 and 61X8937: Size: 64kB	Start: F000:E05B	Date: 12/12/86	8525/8530
-8530 ROM from 61X8940 and 61X8939: Size: 64kB	Start: F000:E05B	Date: 02/05/87	8525/8530
-8525 ROM from 00F2122 and 00F2123: Size: 64kB	Start: F000:E05B	Date: 06/26/87	8525Warning: Invalid checksum C3h (-40h)
+   Filenames      ROM    Model                Font vectors           ROM BASIC   Copy-    Part numbers 
+  Even    Odd     Date               8x16    8x8 (VGA/MCGA)   8x8      vector   rights    Even     Odd 
+68X1687 68X1627: 09/02/86 8530 8x16: 3960h 8x8V: 4960h 8x8: FA6Eh BASIC: 6000h 1981 1987 68X1645 68X1693  Part number mismatch
+61X8938 61X8937: 12/12/86 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h 1981 1987 61X8938 61X8937
+61X8940 61X8939: 02/05/87 8530 8x16: 3A30h 8x8V: 4A30h 8x8: FA6Eh BASIC: 6000h 1981 1987 61X8940 61X8939
+00F2122 00F2123: 06/26/87 8525 8x16: 2F48h 8x8V: 3F48h 8x8: FA6Eh BASIC: 6000h 1981 1987 00F2122 00F2123
+33F4498 33F4499: 01/31/89 8530 8x16: 3A70h 8x8V: 4A70h 8x8: FA6Eh BASIC: 6000h 1981 1989 33F4498 33F4499
 
-8530 ROM from 33F4498 and 33F4499: Size: 64kB	Start: F000:E05B	Date: 01/31/89	8525/8530% 
+Of note:
+1. 68X1687 and 68X1627 don't match the part numbers actually inside the ROMs.
+2. There is a corrupt version of 00F2122 where the even ROM has bit 2 always set from offset 0 - 2180h (0 - 10C0h in the even ROM itself).
+3. There is a corrupt version of 61X8938 where the even ROM has bit 0 always set in the entire ROM. A date of 13/12/86 means you have this corrupt copy.
 
-ROM BASIC is 32kB at F600:0000 (bytes 6000 - DFFF in these ROM dumps). Its SHA-256 hash is:
+Revision notes:
+
+The 8530 Revision 00 has a different 8x16 and 8x8 (VGA/MCGA) font than everything else.
+
+The 8530's Revision 01 to Revision 02 had very few changes other than some
+different data in a few tables.
+
+ROM BASIC version C1.10 is 32kB at F600:0000 (bytes 6000 - DFFF in these ROM dumps). Its SHA-256 hash is:
 3033d1a54c99d7e2aa1fc7c8c2e51a56ae1b61bf4e70e8aa580f43c43e37a63e
