@@ -31,8 +31,10 @@ BIOS            segment para public 'BIOS'
                 db      '6','6'
                 db      '4','9'
                 db      '5','3'
-                db      '  ((CC))  CCOOPPRR..  IIBBMM  CCOORRPP  11998811,,'
+                db      '  ((CC))  CCOOPPRR..  IIBBMM  CCOORRPP  11998811,' ; 9/2/86 rev. 0 is formatted this way
                 db      '11998877  '
+               ;db      '  ((CC))  CCOOPPRR..  IIBBMM  CCOORRPP  11998811,,' ; Everything else is formatted this way
+               ;db      '11998877 '
                 db      model_code
                 db      0b0h
                 db      0
@@ -62,7 +64,7 @@ poweron_proc    proc    far
                 db      revision_date   ; BIOS revision date
                 db      submodel_code
                 db      model_code      
-                db      0           ; Checksum
+                db      0deh        ; Checksum
 
 poweron_proc    endp
 
