@@ -1,4 +1,3 @@
-*_*.BIN
-*.BIN
-*.ASM
+ROMBASIC.BIN
+ROMBASIC.ASM
 *.err
